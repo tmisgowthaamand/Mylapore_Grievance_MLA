@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mylapore Constituency Grievance Portal — TVK</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a3a6b;--navy-dark:#0d2347;--navy-mid:#1e4a85;
+  --saffron:#f26522;--saffron-light:#fff3ec;
+  --green:#138808;--green-light:#e8f5e9;
+  --blue:#0057a8;--blue-light:#e3f2fd;
+  --bg:#eef2f8;--white:#fff;
+  --border:#c8d4e8;--border-light:#dde6f3;
+  --text:#1a2535;--muted:#5a6a82;--hint:#8a9bb5;
+  --red:#c62828;--red-light:#ffebee;
+}
+html,body{height:100%;font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ===== PAGE LAYOUT ===== */
+.page{min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+
+/* ===== NATIONAL HEADER ===== */
+.nat-header{background:#fff;border-bottom:1px solid var(--border);padding:6px 20px;display:flex;align-items:center;gap:12px}
+.nat-logo{display:flex;align-items:center;gap:10px}
+.emblem-circle{width:44px;height:44px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.nat-title{font-family:'Noto Serif',serif}
+.nat-title h1{font-size:14px;font-weight:700;color:var(--navy);line-height:1.2}
+.nat-title p{font-size:11px;color:var(--muted)}
+.tricolor{height:4px;background:linear-gradient(to right,#ff9933 33%,#fff 33%,#fff 66%,#138808 66%);border-bottom:1px solid var(--border)}
+
+/* ===== PORTAL HEADER ===== */
+.portal-header{background:var(--navy-dark);color:#fff}
+.portal-header-top{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:3px solid var(--saffron)}
+.mla-avatar{width:42px;height:42px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.3)}
+.portal-title h2{font-family:'Noto Serif',serif;font-size:15px;font-weight:700;color:#fff;line-height:1.3}
+.portal-title p{font-size:11px;color:#7da8d4}
+.lang-toggle{margin-left:auto;display:flex;gap:6px}
+.lang-btn{font-size:11px;padding:4px 10px;border:1px solid rgba(255,255,255,.3);border-radius:3px;background:transparent;color:rgba(255,255,255,.8);cursor:pointer;font-family:'Noto Sans',sans-serif}
+.lang-btn.active{background:var(--saffron);border-color:var(--saffron);color:#fff}
+.portal-meta{display:flex;justify-content:space-between;align-items:center;padding:8px 20px;background:var(--navy)}
+.meta-left,.meta-right{font-size:11px}
+.meta-label{color:#7da8d4}
+.meta-value{color:#fff;font-weight:600;font-size:12px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:5px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ===== MAIN CONTENT ===== */
+.main{display:flex;flex:1;gap:0;max-width:1100px;margin:20px auto;width:100%;padding:0 16px;align-items:flex-start}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:240px;flex-shrink:0;margin-right:16px}
+.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.sidebar-head{background:var(--navy);color:#fff;padding:10px 14px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.sidebar-body{padding:12px 14px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:12px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--muted)}
+.info-val{font-weight:600;color:var(--text);text-align:right;font-size:11px}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600}
+.tag-open{background:#fff3e0;color:#e65100}
+.tag-green{background:var(--green-light);color:#1b5e20}
+.tag-blue{background:var(--blue-light);color:#0d47a1}
+.tag-navy{background:#e8edf5;color:var(--navy)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px}
+.stat-box{background:var(--bg);border-radius:6px;padding:10px;text-align:center}
+.stat-num{font-size:22px;font-weight:700;color:var(--navy)}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.notice-box{background:var(--saffron-light);border-left:3px solid var(--saffron);padding:10px 12px;margin:12px 14px;border-radius:0 4px 4px 0;font-size:11px;color:#7c3000;line-height:1.6}
+
+/* ===== CHAT CONTAINER ===== */
+.chat-container{flex:1;display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:560px;max-height:620px}
+.chat-tab-bar{display:flex;border-bottom:2px solid var(--border);background:#fafbfd}
+.chat-tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;gap:6px}
+.chat-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.chat-tab .badge{background:var(--saffron);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px}
+.chat-area{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px;background:#f4f7fb;scroll-behavior:smooth}
+.chat-area::-webkit-scrollbar{width:5px}
+.chat-area::-webkit-scrollbar-thumb{background:#c8d4e8;border-radius:4px}
+
+/* ===== MESSAGES ===== */
+.msg-row{display:flex;gap:10px;align-items:flex-end;animation:fadeUp .3s ease}
+.msg-row.user-row{flex-direction:row-reverse}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.avatar.bot-av{background:var(--navy);color:#fff}
+.avatar.user-av{background:var(--saffron);color:#fff}
+.bubble{max-width:78%;padding:11px 14px;border-radius:14px;font-size:13px;line-height:1.65}
+.bubble.bot-bub{background:#fff;border:1px solid var(--border);border-bottom-left-radius:3px;color:var(--text)}
+.bubble.user-bub{background:var(--navy);color:#fff;border-bottom-right-radius:3px}
+.ts{font-size:10px;color:var(--hint);margin-top:5px;display:block}
+.user-bub .ts{color:rgba(255,255,255,.55)}
+
+/* ===== CHOICE BUTTONS ===== */
+.choice-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.choice-btn{padding:7px 14px;border:1.5px solid var(--blue);color:var(--blue);background:#fff;border-radius:5px;font-size:12px;cursor:pointer;font-family:'Noto Sans',sans-serif;font-weight:500;transition:all .18s;line-height:1.4}
+.choice-btn:hover:not(:disabled){background:var(--blue);color:#fff}
+.choice-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ===== FORM BUBBLE ===== */
+.form-bubble{background:#fff;border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:3px;padding:16px;max-width:82%}
+.form-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--saffron);font-family:'Noto Serif',serif}
+.f-row{margin-bottom:12px}
+.f-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.f-input{width:100%;border:1px solid var(--border);border-radius:5px;padding:8px 11px;font-size:13px;font-family:'Noto Sans',sans-serif;color:var(--text);outline:none;background:#fafbfd;transition:border .18s}
+.f-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,87,168,.08)}
+.f-opt{font-size:11px;color:var(--hint);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
+.submit-btn{width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;font-family:'Noto Sans',sans-serif;letter-spacing:.3px;transition:background .2s}
+.submit-btn:hover{background:var(--blue)}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* ===== TYPING INDICATOR ===== */
+.typing-row{display:flex;gap:10px;align-items:flex-end}
+.typing-bub{background:#fff;border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:3px;padding:12px 16px;display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;background:#94a3b8;border-radius:50%;animation:blink 1.3s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* ===== SPECIAL CARDS ===== */
+.member-badge{background:var(--green-light);border:1px solid #a5d6a7;border-radius:8px;padding:12px 14px;margin-top:10px;display:flex;align-items:center;gap:12px}
+.member-num{font-size:26px;font-weight:800;color:#1b5e20;font-family:'Noto Serif',serif}
+.member-info{font-size:12px;color:#2e7d32;line-height:1.5}
+.confirm-box{background:var(--green-light);border:1px solid #a5d6a7;border-radius:8px;padding:14px;margin-top:10px}
+.confirm-id{font-size:14px;font-weight:800;color:#1b5e20;letter-spacing:.5px}
+.confirm-detail{font-size:12px;color:#2e7d32;margin-top:6px;line-height:1.8}
+.sla-badge{background:#fff;border:1px solid #a5d6a7;border-radius:5px;padding:7px 10px;margin-top:8px;display:flex;align-items:center;gap:8px;font-size:12px;color:#1b5e20}
+.progress-wrap{margin-top:10px}
+.progress-label{font-size:10px;color:#5a6a82;margin-bottom:4px;display:flex;justify-content:space-between}
+.progress-bar{height:6px;background:#e0e8f5;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--saffron);border-radius:3px;transition:width .8s}
+.grievance-card{background:#f8faff;border:1px solid #d0dff5;border-radius:8px;padding:12px 14px;margin-top:8px}
+.grievance-id{font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.5px}
+.grievance-issue{font-size:13px;font-weight:600;margin:5px 0 3px;color:var(--text)}
+.grievance-loc{font-size:12px;color:var(--muted)}
+.grievance-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border-light);font-size:11px}
+
+/* ===== SUB-CATEGORY LIST ===== */
+.sub-list{display:flex;flex-direction:column;gap:5px;margin-top:10px;max-height:220px;overflow-y:auto;padding-right:3px}
+.sub-list::-webkit-scrollbar{width:4px}
+.sub-list::-webkit-scrollbar-thumb{background:#c8d4e8;border-radius:4px}
+.sub-item{padding:8px 12px;border:1px solid var(--border);border-radius:5px;font-size:12px;cursor:pointer;background:#fff;color:var(--text);text-align:left;font-family:'Noto Sans',sans-serif;transition:all .15s;display:flex;align-items:center;gap:10px;width:100%}
+.sub-item:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sub-num{font-size:10px;font-weight:700;color:var(--hint);min-width:20px;flex-shrink:0}
+.sub-item:hover .sub-num{color:rgba(255,255,255,.6)}
+
+/* ===== DIVIDER ===== */
+.chat-divider{text-align:center;font-size:11px;color:var(--hint);position:relative;margin:4px 0}
+.chat-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+.chat-divider span{background:#f4f7fb;padding:0 12px;position:relative}
+
+/* ===== INPUT BAR ===== */
+.input-bar{border-top:1px solid var(--border);background:#fff;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-shrink:0}
+.char-hint{font-size:10px;color:var(--hint);min-width:70px;text-align:right;flex-shrink:0}
+.char-warn{color:var(--saffron)!important}
+.text-inp{flex:1;border:1px solid var(--border);border-radius:22px;padding:9px 16px;font-size:13px;font-family:'Noto Sans',sans-serif;outline:none;background:#f8faff;color:var(--text);transition:border .18s}
+.text-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,87,168,.08)}
+.send-btn{width:40px;height:40px;border-radius:50%;background:var(--navy);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .18s;font-size:16px}
+.send-btn:hover{background:var(--blue)}
+
+/* ===== FOOTER ===== */
+.gov-footer{background:var(--navy-dark);color:#7da8d4;text-align:center;padding:12px;font-size:11px;margin-top:auto}
+.gov-footer a{color:#a8c4e0;text-decoration:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:760px){
+  .main{flex-direction:column;padding:0 10px;margin:10px auto}
+  .sidebar{width:100%;margin-right:0;margin-bottom:12px}
+  .chat-container{min-height:480px;max-height:520px}
+  .nat-header{padding:8px 12px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- National Header -->
+  <div class="nat-header">
+    <div class="nat-logo">
+      <div class="emblem-circle">🏛</div>
+      <div class="nat-title">
+        <h1>Government of Tamil Nadu</h1>
+        <p>Mylapore Assembly Constituency — Citizen Grievance Portal</p>
+      </div>
+    </div>
+    <div style="margin-left:auto;font-size:11px;color:var(--muted);text-align:right">
+      <div style="font-weight:600;color:var(--navy)">Friday, 09 May 2026</div>
+      <div>Constituency No. 10 | Chennai District</div>
+    </div>
+  </div>
+  <div class="tricolor"></div>
+
+  <!-- Portal Header -->
+  <div class="portal-header">
+    <div class="portal-header-top">
+      <div class="mla-avatar">V</div>
+      <div class="portal-title">
+        <h2>Mylapore Constituency Grievance Portal</h2>
+        <p>MLA: Venkatramanan (TVK) | Chennai South Lok Sabha | 2026–2031</p>
+      </div>
+      <div class="lang-toggle">
+        <button class="lang-btn active">EN</button>
+        <button class="lang-btn">தமிழ்</button>
+      </div>
+    </div>
+    <div class="portal-meta">
+      <div class="meta-left">
+        <div class="meta-label">Constituency</div>
+        <div class="meta-value"><span class="live-dot"></span>Live Support Active</div>
+      </div>
+      <div class="meta-right" style="text-align:center">
+        <div class="meta-label">Helpline</div>
+        <div class="meta-value">1800-XXX-XXXX (Toll Free)</div>
+      </div>
+      <div class="meta-right" style="text-align:right">
+        <div class="meta-label">Reference Format</div>
+        <div class="meta-value">#MYL-2026-XXXXX</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-head">📊 Portal Statistics</div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-num" id="totalGriev">1,247</div><div class="stat-lbl">Total Grievances</div></div>
+          <div class="stat-box"><div class="stat-num" style="color:var(--green)">834</div><div class="stat-lbl">Resolved</div></div>
+          <div class="stat-box"><div class="stat-num" style="color:var(--saffron)">312</div><div class="stat-lbl">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num" style="color:var(--muted)">101</div><div class="stat-lbl">Pending</div></div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-head">ℹ️ Constituency Info</div>
+        <div class="sidebar-body">
+          <div class="info-row"><span class="info-label">MLA</span><span class="info-val">Venkatramanan</span></div>
+          <div class="info-row"><span class="info-label">Party</span><span class="info-val"><span class="tag tag-navy">TVK</span></span></div>
+          <div class="info-row"><span class="info-label">District</span><span class="info-val">Chennai</span></div>
+          <div class="info-row"><span class="info-label">Ward</span><span class="info-val">Mylapore</span></div>
+          <div class="info-row"><span class="info-label">Response SLA</span><span class="info-val" style="color:var(--green);font-weight:700">7 Working Days</span></div>
+          <div class="info-row"><span class="info-label">Victory Margin</span><span class="info-val">70,070 votes</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-head">📋 Grievance Categories</div>
+        <div class="sidebar-body" style="padding:8px 14px">
+          <div class="info-row"><span class="info-label">🏗 Infrastructure</span><span class="tag tag-open">Active</span></div>
+          <div class="info-row"><span class="info-label">⚕️ Health</span><span class="tag" style="background:#f5f5f5;color:#aaa">Soon</span></div>
+          <div class="info-row"><span class="info-label">📚 Education</span><span class="tag" style="background:#f5f5f5;color:#aaa">Soon</span></div>
+          <div class="info-row"><span class="info-label">💧 Water Supply</span><span class="tag" style="background:#f5f5f5;color:#aaa">Soon</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-head">📢 Notice Board</div>
+        <div class="notice-box">MLA Constituency Meeting — Every 2nd Saturday, 10:00 AM at Mylapore MLA Office.</div>
+        <div class="notice-box" style="margin-top:0">All grievances registered online are officially tracked and responded to within 7 working days.</div>
+      </div>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+      <div class="chat-tab-bar">
+        <div class="chat-tab active">💬 Grievance Chat <span class="badge" id="chatBadge">New</span></div>
+        <div class="chat-tab" onclick="showMyGrievancesTab()">📂 My Grievances</div>
+        <div class="chat-tab" onclick="showTrackStatus()">🔍 Track Status</div>
+      </div>
+
+      <div class="chat-area" id="chatArea"></div>
+
+      <div class="input-bar">
+        <input class="text-inp" id="userInput" placeholder="Type your message and press Enter..." maxlength="200"/>
+        <span class="char-hint" id="charHint" style="display:none">0/200</span>
+        <button class="send-btn" onclick="handleSend()" title="Send">&#10148;</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="gov-footer">
+    &copy; 2026 Mylapore Constituency Office, Tamil Nadu | Powered by TVK Digital Governance Initiative |
+    <a href="#">Privacy Policy</a> &nbsp;|&nbsp; <a href="#">Terms of Use</a> &nbsp;|&nbsp; <a href="#">Contact Office</a>
+  </div>
+</div>
+
+<script>
+const SUBS=[
+  "Pothole / Road Damage","Road Waterlogging / Flooding","No Street Lighting",
+  "Broken Footpath / Pavement","Illegal Encroachment on Road","Stray Animal on Road",
+  "Road Divider Damage","Speed Breaker Missing / Broken","Signboard / Traffic Sign Missing",
+  "Drain Overflow / Sewage on Road","Garbage on Road / Not Collected",
+  "Fallen Tree / Branch Blocking Road","Damaged Bus Stop / No Shelter",
+  "Construction Debris on Road","No Pedestrian Crossing / Zebra Line",
+  "Broken Road Median","Road Repair — No Safety Fencing","Other Road / Civic Issue"
+];
+
+let STATE={step:'welcome',user:{},grievances:[],current:{}};
+let memberCount=1247+Math.floor(Math.random()*50);
+let grievanceSeq=Math.floor(Math.random()*400)+800;
+let otpGenerated='';
+
+const area=document.getElementById('chatArea');
+const inp=document.getElementById('userInput');
+const charHint=document.getElementById('charHint');
+
+function now(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}
+function scroll(){setTimeout(()=>area.scrollTop=area.scrollHeight,100)}
+
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html)e.innerHTML=html;return e}
+
+function addBotMsg(content,delay=1000){
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const row=el('div','msg-row');
+    const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    if(typeof content==='string'){bub.innerHTML=content;}
+    else{bub.appendChild(content);}
+    bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);
+    area.appendChild(row);scroll();
+    document.getElementById('chatBadge').textContent='New';
+  },delay);
+}
+
+function addUserMsg(text){
+  const row=el('div','msg-row user-row');
+  const av=el('div','avatar user-av','U');
+  const bub=el('div','bubble user-bub');
+  bub.innerHTML=text+'<span class="ts">'+now()+'</span>';
+  row.appendChild(av);row.appendChild(bub);
+  area.appendChild(row);scroll();
+}
+
+function showTyping(){
+  if(document.getElementById('typing-indicator'))return;
+  const row=el('div','typing-row');row.id='typing-indicator';
+  const av=el('div','avatar bot-av','MLA');
+  const tb=el('div','typing-bub');
+  tb.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  row.appendChild(av);row.appendChild(tb);area.appendChild(row);scroll();
+}
+function hideTyping(){const t=document.getElementById('typing-indicator');if(t)t.remove();}
+function disableChoices(){document.querySelectorAll('.choice-btn:not(:disabled)').forEach(b=>{b.disabled=true;});}
+
+function divider(txt){
+  const d=el('div','chat-divider');d.innerHTML='<span>'+txt+'</span>';area.appendChild(d);
+}
+
+// ===== WELCOME =====
+function showWelcome(){
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="border-radius:10px;overflow:hidden;margin-bottom:12px"><img src="Gemini_Generated_Image_101c0101c0101c01.png" alt="MLA Venkatramanan - TVK" style="width:100%;height:auto;max-height:160px;object-fit:cover;display:block"/></div>
+    <div style="font-family:'Noto Serif',serif;font-size:15px;font-weight:700;color:#1a3a6b;margin-bottom:8px">🏛 Vanakkam! Welcome to the Official Grievance Portal</div>
+    <div style="font-size:13px;color:#5a6a82;line-height:1.7">This is the digital support system of <strong>MLA Venkatramanan (TVK)</strong> for Mylapore Constituency.<br><br>
+    You can raise civic issues, track grievances, and receive official responses within <strong style="color:#138808">7 working days</strong>.</div>`;
+    const grid=el('div','choice-grid');
+    grid.innerHTML=`<button class="choice-btn" onclick="handleChoice('existing')">🪪 Login with Voter ID (EPIC)</button>
+    <button class="choice-btn" onclick="handleChoice('new')">✍️ Register as New Member</button>`;
+    d.appendChild(grid);
+    const row=el('div','msg-row');
+    const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+  },500);
+}
+
+function handleChoice(val){
+  disableChoices();
+  if(val==='existing'){
+    addUserMsg('Login with Voter ID (EPIC)');
+    STATE.step='epic_input';
+    addBotMsg(`<strong>Enter your EPIC (Voter ID) Number</strong><br><span style="font-size:12px;color:#5a6a82">Your 10-character Voter ID. Example: <code style="background:#f0f4f8;padding:1px 5px;border-radius:3px">TNA1234567</code></span>`);
+    inp.placeholder='Enter EPIC number (e.g. TNA1234567)...';inp.focus();
+  } else {
+    addUserMsg('Register as New Member');
+    STATE.step='register';
+    showRegisterForm();
+  }
+}
+
+// ===== REGISTER FORM =====
+function showRegisterForm(){
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const row=el('div','msg-row');
+    const av=el('div','avatar bot-av','MLA');
+    const wrap=el('div','form-bubble');
+    wrap.innerHTML=`
+      <div class="form-title">📋 New Member Registration</div>
+      <div class="f-row"><label class="f-label">Full Name <span style="color:red">*</span></label>
+        <input class="f-input" id="rName" placeholder="Enter your full name"/></div>
+      <div class="f-row"><label class="f-label">Phone Number <span style="color:red">*</span></label>
+        <input class="f-input" id="rPhone" placeholder="+91 XXXXX XXXXX" maxlength="13"/></div>
+      <div class="f-row"><label class="f-label">EPIC / Voter ID <span class="f-opt">(optional)</span></label>
+        <input class="f-input" id="rEpic" placeholder="TNA1234567"/></div>
+      <div class="f-row"><label class="f-label">Area / Ward in Mylapore <span class="f-opt">(optional)</span></label>
+        <input class="f-input" id="rArea" placeholder="e.g. Luz Corner, Abhiramapuram, R.A. Puram"/></div>
+      <div class="f-row"><label class="f-label">Email Address <span class="f-opt">(optional)</span></label>
+        <input class="f-input" id="rEmail" type="email" placeholder="your@email.com"/></div>
+      <button class="submit-btn" id="regBtn" onclick="submitRegister()">✅ Complete Registration</button>
+    `;
+    wrap.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(wrap);area.appendChild(row);scroll();
+  },1000);
+}
+
+function submitRegister(){
+  const name=document.getElementById('rName').value.trim();
+  const phone=document.getElementById('rPhone').value.trim();
+  if(!name){document.getElementById('rName').style.borderColor='red';return;}
+  if(!phone||phone.length<10){document.getElementById('rPhone').style.borderColor='red';return;}
+  STATE.user={name,phone,epic:document.getElementById('rEpic').value||'',area:document.getElementById('rArea').value||'Mylapore',email:document.getElementById('rEmail').value||'',type:'new'};
+  memberCount++;
+  document.getElementById('regBtn').disabled=true;
+  document.getElementById('regBtn').textContent='Registered ✓';
+  addUserMsg('Registration submitted');
+  STATE.step='home';
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="font-weight:700;color:#1a3a6b;font-size:14px;font-family:'Noto Serif',serif">✅ Registration Successful!</div>
+    <div style="font-size:13px;color:#5a6a82;margin-top:5px">Welcome, <strong>${name}</strong>! You are now a registered support member of the Mylapore TVK Constituency Network.</div>`;
+    const badge=el('div','member-badge');
+    badge.innerHTML=`<div class="member-num">#${memberCount}</div><div class="member-info"><div style="font-weight:700;font-size:13px">Support Member</div><div>Mylapore TVK Constituency Network</div><div style="margin-top:3px;font-size:11px;opacity:.8">Chennai District, Tamil Nadu</div></div>`;
+    d.appendChild(badge);
+    showHomeMenu(d);
+    const row=el('div','msg-row');
+    const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+  },1000);
+}
+
+function showHomeMenu(parent){
+  const grid=el('div','choice-grid');
+  grid.style.marginTop='12px';
+  grid.innerHTML=`<button class="choice-btn" onclick="startGrievance()">📋 Raise a Grievance</button>
+  <button class="choice-btn" onclick="showMyGrievances()">📂 My Grievances</button>
+  <button class="choice-btn" onclick="showTrackStatus()">🔍 Track by ID</button>`;
+  parent.appendChild(grid);
+}
+
+// ===== EPIC LOGIN WITH OTP =====
+function handleSend(){
+  const val=inp.value.trim();
+  if(!val)return;
+  if(STATE.step==='epic_input'){
+    addUserMsg(val);inp.value='';
+    const epic=val.toUpperCase();
+    if(epic.length<6){addBotMsg('❌ Invalid EPIC number. Please enter a valid Voter ID (e.g. <strong>TNA1234567</strong>).');return;}
+    STATE.user.epic=epic;
+    STATE.step='mobile_input';
+    addBotMsg(`<strong>✓ EPIC Accepted:</strong> <code style="background:#f0f4f8;padding:1px 5px;border-radius:3px">${epic}</code><br><br>Now enter your <strong>registered mobile number</strong> for OTP verification:<br><span style="font-size:12px;color:#5a6a82">We'll send a 6-digit OTP to verify your identity.</span>`);
+    inp.placeholder='Enter mobile number (e.g. 9876543210)...';inp.focus();
+    return;
+  }
+  if(STATE.step==='mobile_input'){
+    addUserMsg(val);inp.value='';
+    const phone=val.replace(/[^0-9]/g,'');
+    if(phone.length<10){addBotMsg('❌ Invalid mobile number. Please enter a valid 10-digit number.');return;}
+    STATE.user.phone=phone;
+    otpGenerated=String(Math.floor(100000+Math.random()*900000));
+    STATE.step='otp_verify';
+    addBotMsg(`<div style="font-weight:600;color:#1a3a6b;margin-bottom:6px">📱 OTP Sent!</div>
+    <div style="font-size:12px;color:#5a6a82;line-height:1.7">A 6-digit OTP has been sent to <strong>+91 ${phone.slice(-10,-5)}*****</strong><br><br>
+    <div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:6px;padding:8px 12px;margin-top:6px">
+      <span style="font-size:11px;color:#e65100">🔑 Demo OTP: <strong style="font-size:14px;letter-spacing:2px">${otpGenerated}</strong></span><br>
+      <span style="font-size:10px;color:#bf360c">(In production, this would be sent via SMS)</span>
+    </div>
+    </div>`);
+    inp.placeholder='Enter 6-digit OTP...';inp.focus();
+    return;
+  }
+  if(STATE.step==='otp_verify'){
+    addUserMsg(val);inp.value='';
+    const enteredOtp=val.replace(/\s/g,'');
+    if(enteredOtp!==otpGenerated){
+      addBotMsg('❌ <strong>Invalid OTP.</strong> Please enter the correct 6-digit OTP sent to your mobile.<br><span style="font-size:12px;color:#5a6a82">Demo OTP: '+otpGenerated+'</span>');
+      return;
+    }
+    STATE.user.name='Voter ('+STATE.user.epic+')';
+    STATE.user.area='Mylapore';
+    STATE.user.type='existing';
+    STATE.step='home';
+    inp.placeholder='Type your message...';
+    showTyping();
+    setTimeout(()=>{
+      hideTyping();
+      const d=el('div');
+      d.innerHTML=`<div style="font-weight:700;color:#1a3a6b;font-size:14px;font-family:'Noto Serif',serif">✅ Identity Verified Successfully</div>
+      <table style="margin-top:8px;font-size:12px;border-collapse:collapse;width:100%">
+        <tr><td style="color:#5a6a82;padding:4px 0">EPIC Number</td><td style="font-weight:600;padding:4px 0;padding-left:12px">${STATE.user.epic}</td></tr>
+        <tr><td style="color:#5a6a82;padding:4px 0">Mobile</td><td style="font-weight:600;padding:4px 0;padding-left:12px">+91 ${STATE.user.phone.slice(-10)}</td></tr>
+        <tr><td style="color:#5a6a82;padding:4px 0">Constituency</td><td style="font-weight:600;padding:4px 0;padding-left:12px">Mylapore — No. 10</td></tr>
+        <tr><td style="color:#5a6a82;padding:4px 0">OTP Status</td><td style="padding:4px 0;padding-left:12px"><span class="tag tag-green">✓ Verified</span></td></tr>
+        <tr><td style="color:#5a6a82;padding:4px 0">Voter Status</td><td style="padding:4px 0;padding-left:12px"><span class="tag tag-green">✓ Active Voter</span></td></tr>
+      </table>`;
+      showHomeMenu(d);
+      const row=el('div','msg-row');
+      const av=el('div','avatar bot-av','MLA');
+      const bub=el('div','bubble bot-bub');
+      bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+      row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+    },1100);
+    return;
+  }
+  if(STATE.step==='desc_issue'){
+    if(val.length>200){alert('Max 200 characters allowed.');return;}
+    STATE.current.message=val;
+    addUserMsg(val);
+    inp.value='';charHint.style.display='none';
+    inp.placeholder='Type your message...';
+    STATE.step='submitting';
+    finalSubmit();
+    return;
+  }
+  if(STATE.step==='manual_location'){
+    STATE.current.location=val;
+    addUserMsg(val);inp.value='';
+    inp.placeholder='Describe the issue (max 200 characters)...';
+    STATE.step='desc_issue';
+    showTyping();
+    setTimeout(()=>{
+      hideTyping();
+      const d=el('div');
+      d.innerHTML=`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:6px">💬 Describe Your Issue</div>
+      <div style="font-size:12px;color:#5a6a82;line-height:1.7">Write a clear, brief description of the problem. This message will be reviewed by MLA Venkatramanan's team.<br><br>
+      <strong>⚠️ Max 200 characters.</strong> Type in the chat box below and press Enter or click Send.</div>`;
+      const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+      const bub=el('div','bubble bot-bub');
+      bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+      row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+      inp.focus();
+      charHint.style.display='block';charHint.textContent='0/200';
+    },900);
+    return;
+  }
+  if(STATE.step==='track_input'){
+    addUserMsg(val);inp.value='';
+    inp.placeholder='Type your message...';
+    trackById(val.trim().toUpperCase());
+    return;
+  }
+  if(val){addUserMsg(val);inp.value='';}
+}
+
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleSend();});
+inp.addEventListener('input',()=>{
+  if(STATE.step==='desc_issue'){
+    const len=inp.value.length;
+    charHint.style.display='block';
+    charHint.textContent=len+'/200';
+    charHint.className=len>170?'char-hint char-warn':'char-hint';
+  }
+});
+
+// ===== GRIEVANCE FLOW =====
+function startGrievance(){
+  disableChoices();
+  addUserMsg('Raise a Grievance');
+  STATE.step='select_category';
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:8px">📋 Step 1: Select Grievance Category</div>
+    <div style="font-size:12px;color:#5a6a82;margin-bottom:10px">Choose the department / type of issue you want to report to MLA Venkatramanan's office</div>`;
+    const grid=el('div','choice-grid');
+    grid.innerHTML=`<button class="choice-btn" onclick="selectCategory()" style="text-align:left;width:100%">🏗️ Infrastructure & Civic Works</button>
+    <button class="choice-btn" style="opacity:.45;cursor:not-allowed;text-align:left;width:100%" disabled>⚕️ Health & Sanitation (Coming Soon)</button>
+    <button class="choice-btn" style="opacity:.45;cursor:not-allowed;text-align:left;width:100%" disabled>📚 Education & Welfare (Coming Soon)</button>
+    <button class="choice-btn" style="opacity:.45;cursor:not-allowed;text-align:left;width:100%" disabled>💧 Water Supply (Coming Soon)</button>`;
+    d.appendChild(grid);
+    const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+  },900);
+}
+
+function selectCategory(){
+  disableChoices();
+  addUserMsg('🏗️ Infrastructure & Civic Works');
+  STATE.current.category='Infrastructure & Civic Works';
+  STATE.step='select_sub';
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:6px">🔍 Step 2: Select Sub-Category</div>
+    <div style="font-size:12px;color:#5a6a82">Choose the specific road or civic issue — <strong>18 categories available</strong></div>`;
+    const list=el('div','sub-list');
+    SUBS.forEach((s,i)=>{
+      const btn=document.createElement('button');btn.className='sub-item';
+      btn.innerHTML=`<span class="sub-num">${String(i+1).padStart(2,'0')}</span>${s}`;
+      btn.onclick=()=>{
+        list.querySelectorAll('button').forEach(b=>b.disabled=true);
+        selectSub(s);
+      };
+      list.appendChild(btn);
+    });
+    d.appendChild(list);
+    const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+  },900);
+}
+
+function selectSub(sub){
+  STATE.current.sub=sub;
+  addUserMsg(sub);
+  STATE.step='get_location';
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:6px">📍 Step 3: Share Issue Location</div>
+    <div style="font-size:12px;color:#5a6a82;line-height:1.7">Help the MLA team locate the exact problem area in Mylapore.</div>
+    <div class="choice-grid" style="margin-top:10px">
+      <button class="choice-btn" onclick="useGPS()">📍 Use My Current Location (GPS)</button>
+      <button class="choice-btn" onclick="typeManualLocation()">✏️ Type Landmark / Area</button>
+    </div>`;
+    const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+  },900);
+}
+
+function useGPS(){
+  disableChoices();
+  addUserMsg('📍 Sharing GPS location...');
+  showTyping();
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        hideTyping();
+        const lat=pos.coords.latitude.toFixed(4);
+        const lng=pos.coords.longitude.toFixed(4);
+        STATE.current.location=`Mylapore, Chennai — GPS: ${lat}°N, ${lng}°E`;
+        STATE.current.coords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+        addBotMsg(`<div style="font-weight:600;color:#1a3a6b;margin-bottom:6px">📍 Location Captured Successfully</div>
+        <div style="font-size:12px;color:#5a6a82;margin-bottom:8px">GPS Coordinates: <strong>${lat}°N, ${lng}°E</strong></div>
+        <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:8px 12px;font-size:12px;color:#1b5e20">✓ Location recorded for your grievance</div>`,400);
+        STATE.step='desc_issue';
+        setTimeout(()=>{
+          showDescribeStep();
+        },1800);
+      },
+      function(err){
+        hideTyping();
+        STATE.current.location='Mylapore, Chennai — GPS: 13.0339°N, 80.2619°E (approximate)';
+        addBotMsg(`<div style="font-weight:600;color:#e65100;margin-bottom:6px">⚠️ GPS Access Denied</div>
+        <div style="font-size:12px;color:#5a6a82">Using approximate Mylapore location. You can also type your exact location below.</div>
+        <div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:6px;padding:8px 12px;font-size:12px;color:#e65100;margin-top:6px">Default: Mylapore, Chennai (13.0339°N, 80.2619°E)</div>`,400);
+        STATE.step='desc_issue';
+        setTimeout(()=>{
+          showDescribeStep();
+        },1800);
+      },
+      {enableHighAccuracy:true,timeout:10000}
+    );
+  } else {
+    hideTyping();
+    STATE.current.location='Mylapore, Chennai — GPS: 13.0339°N, 80.2619°E';
+    addBotMsg('📍 Location captured: <strong>Mylapore, Chennai</strong> (GPS not supported, using default location).',400);
+    STATE.step='desc_issue';
+    setTimeout(()=>{
+      showDescribeStep();
+    },1800);
+  }
+}
+
+function typeManualLocation(){
+  disableChoices();
+  STATE.step='manual_location';
+  addBotMsg('Please type your location or nearest landmark:<br><span style="font-size:12px;color:#5a6a82">Example: "Near Kapaleeshwarar Temple main gate", "Luz Corner junction", "R.A. Puram 2nd Street"</span>');
+  inp.placeholder='Type location or nearest landmark...';inp.focus();
+}
+
+function showDescribeStep(){
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:6px">💬 Step 4: Describe Your Issue</div>
+    <div style="font-size:12px;color:#5a6a82;line-height:1.7">Write a clear, brief description of the problem. This message will be reviewed by MLA Venkatramanan's team.<br><br>
+    <strong>⚠️ Max 200 characters.</strong> Type in the chat box below and press Enter or click Send.</div>`;
+    const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+    inp.placeholder='Describe the issue (max 200 characters)...';inp.focus();
+    charHint.style.display='block';charHint.textContent='0/200';
+  },900);
+}
+
+function finalSubmit(){
+  grievanceSeq++;
+  const gid='MYL-2026-'+String(grievanceSeq).padStart(5,'0');
+  const submittedAt=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const saved={id:gid,category:STATE.current.category,sub:STATE.current.sub,location:STATE.current.location||'Not specified',message:STATE.current.message||'',submittedAt,status:'Open',coords:STATE.current.coords||null};
+  STATE.grievances.push(saved);
+  STATE.current={};
+  STATE.step='done';
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    d.innerHTML=`<div style="font-weight:700;font-size:14px;font-family:'Noto Serif',serif;color:#1a3a6b;margin-bottom:10px">📬 Grievance Successfully Registered</div>`;
+    const box=el('div','confirm-box');
+    box.innerHTML=`<div class="confirm-id">✅ Reference ID: #${gid}</div>
+    <div class="confirm-detail">
+      <strong>Category:</strong> ${saved.category}<br>
+      <strong>Issue Type:</strong> ${saved.sub}<br>
+      <strong>Location:</strong> ${saved.location}<br>
+      <strong>Your Message:</strong> "${saved.message.substring(0,100)}${saved.message.length>100?'...':''}"
+    </div>
+    <div class="sla-badge">⏱ MLA Venkatramanan's office will respond within <strong style="margin-left:4px">7 working days</strong></div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Grievance Status</span><span>Received</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:12%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#5a6a82;margin-top:4px">
+        <span>✅ Received</span><span>Under Review</span><span>Action Taken</span><span>Resolved</span>
+      </div>
+    </div>`;
+    d.appendChild(box);
+    const note=el('div');note.style.cssText='margin-top:10px;font-size:12px;color:#5a6a82;background:#f8faff;border:1px solid #d0dff5;border-radius:6px;padding:9px 12px;line-height:1.7';
+    note.innerHTML='📱 Save your Reference ID <strong>#'+gid+'</strong> to track status. Total grievances filed: <strong>'+STATE.grievances.length+'</strong>';
+    d.appendChild(note);
+    const grid=el('div','choice-grid');grid.style.marginTop='12px';
+    grid.innerHTML=`<button class="choice-btn" onclick="showMyGrievances()">📂 View My Grievances (${STATE.grievances.length})</button><button class="choice-btn" onclick="resetGrievance()">➕ Raise Another Issue</button>`;
+    d.appendChild(grid);
+    const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);
+    document.getElementById('totalGriev').textContent=(1247+grievanceSeq-800).toLocaleString('en-IN');
+    scroll();
+    // Simulate admin response after 15 seconds for demo
+    simulateAdminResponse(gid);
+  },1400);
+}
+
+function resetGrievance(){
+  disableChoices();
+  STATE.current={};STATE.step='home';
+  addUserMsg('Raise Another Issue');
+  startGrievance();
+}
+
+// ===== ADMIN RESPONSE SIMULATION =====
+function simulateAdminResponse(gid){
+  const responses=[
+    'Issue forwarded to CMDA. Road repair scheduled within 15 days.',
+    'Complaint noted. Ward inspector dispatched for site visit.',
+    'Issue flagged to Corporation Engineering dept. Action initiated.',
+    'Forwarded to Chennai Corporation Zone 9. Will be addressed this week.',
+    'MLA office has taken note. Coordinating with Public Works Department.'
+  ];
+  const randomResp=responses[Math.floor(Math.random()*responses.length)];
+  setTimeout(()=>{
+    const g=STATE.grievances.find(x=>x.id===gid);
+    if(g){
+      g.status='Responded';
+      g.response=randomResp;
+      g.respondedAt=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+      // Show notification in chat
+      const d=el('div');
+      d.innerHTML=`<div style="font-weight:700;font-size:13px;color:#1b5e20;margin-bottom:6px">🟢 MLA Team Response Received!</div>
+      <div class="grievance-card" style="border-color:#a5d6a7;background:#f1f8e9">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+          <span class="grievance-id">#${gid}</span>
+          <span class="tag tag-green">Responded</span>
+        </div>
+        <div class="grievance-issue">${g.sub}</div>
+        <div style="font-size:12px;color:#2e7d32;margin-top:8px;padding:8px 10px;background:#fff;border-radius:5px;border:1px solid #c8e6c9">
+          <strong>💬 MLA Team:</strong> "${randomResp}"
+        </div>
+        <div class="grievance-foot" style="border-top-color:#c8e6c9">
+          <span>📅 Responded: ${g.respondedAt}</span>
+          <span style="color:#1b5e20;font-weight:600">✓ Action Initiated</span>
+        </div>
+      </div>`;
+      const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+      const bub=el('div','bubble bot-bub');
+      bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+      row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+      document.getElementById('chatBadge').textContent='1';
+    }
+  },15000);
+}
+
+// ===== MY GRIEVANCES =====
+function makeGrievanceCard(g, index){
+  const card=el('div','grievance-card');
+  card.style.marginBottom='10px';
+  const isResponded=g.status==='Responded';
+  const msg=g.message?'"'+g.message.substring(0,90)+(g.message.length>90?'...':'')+'"':'';
+  if(isResponded){card.style.borderColor='#a5d6a7';card.style.background='#f1f8e9';}
+  card.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+      <span class="grievance-id">#${g.id}</span>
+      <span class="tag ${isResponded?'tag-green':'tag-open'}">${isResponded?'🟢 Responded':'🔴 Open'}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+      <span style="background:#e8edf5;color:#1a3a6b;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px">${g.category}</span>
+    </div>
+    <div class="grievance-issue">${g.sub}</div>
+    <div class="grievance-loc">📍 ${g.location}</div>
+    ${msg?'<div style="font-size:12px;color:#5a6a82;margin-top:5px;font-style:italic">'+msg+'</div>':''}
+    ${isResponded?'<div style="font-size:12px;color:#2e7d32;margin-top:8px;padding:8px 10px;background:#fff;border-radius:5px;border:1px solid #c8e6c9"><strong>💬 MLA Team:</strong> "'+g.response+'"</div>':''}
+    <div class="grievance-foot">
+      <span>📅 ${g.submittedAt}</span>
+      <span style="color:${isResponded?'#1b5e20':'#e65100'};font-weight:600">${isResponded?'✓ Action Initiated':'⏳ Awaiting Review'}</span>
+    </div>
+    <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${isResponded?'55':'12'}%;${isResponded?'background:#4caf50':''}"></div></div>
+  `;
+  return card;
+}
+
+function showMyGrievances(){
+  disableChoices();
+  addUserMsg('📂 My Grievances');
+  showTyping();
+  setTimeout(()=>{
+    hideTyping();
+    const d=el('div');
+    const count=STATE.grievances.length;
+    d.innerHTML=`<div style="font-weight:700;font-size:14px;font-family:'Noto Serif',serif;color:#1a3a6b;margin-bottom:4px">📂 My Grievances</div>
+    <div style="font-size:12px;color:#5a6a82;margin-bottom:10px">${STATE.user.name||'Mylapore Resident'} — <strong>${count}</strong> grievance${count!==1?'s':''} filed</div>`;
+    if(count===0){
+      const empty=el('div');empty.style.cssText='text-align:center;padding:20px;color:#8a9bb5;border:1px dashed #c8d4e8;border-radius:8px;font-size:13px;margin-top:5px';
+      empty.innerHTML='📭 No grievances raised yet.<br><span style="font-size:12px">Use the chat to raise your first issue.</span>';
+      d.appendChild(empty);
+    } else {
+      const listWrap=el('div');listWrap.style.cssText='display:flex;flex-direction:column;gap:0px';
+      STATE.grievances.forEach((g,i)=>{
+        const num=el('div');num.style.cssText='font-size:11px;color:#8a9bb5;margin-bottom:3px;margin-top:'+(i>0?'8px':'0');
+        num.textContent='Grievance '+(i+1)+' of '+count;
+        listWrap.appendChild(num);
+        listWrap.appendChild(makeGrievanceCard(g,i));
+      });
+      d.appendChild(listWrap);
+    }
+    const grid=el('div','choice-grid');grid.style.marginTop='12px';
+    grid.innerHTML=`<button class="choice-btn" onclick="startGrievance()">➕ Raise New Grievance</button>
+    <button class="choice-btn" onclick="showTrackStatus()">🔍 Track by ID</button>`;
+    d.appendChild(grid);
+    const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+    const bub=el('div','bubble bot-bub');
+    bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+    row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+  },900);
+}
+
+function showMyGrievancesTab(){showMyGrievances();}
+
+// ===== TRACK STATUS =====
+function showTrackStatus(){
+  disableChoices();
+  addUserMsg('🔍 Track Grievance Status');
+  STATE.step='track_input';
+  addBotMsg(`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:6px">🔍 Track Grievance Status</div>
+  <div style="font-size:12px;color:#5a6a82;line-height:1.7">Enter your Grievance Reference ID to check current status.<br><br>
+  <strong>Format:</strong> <code style="background:#f0f4f8;padding:1px 5px;border-radius:3px">MYL-2026-XXXXX</code></div>`);
+  inp.placeholder='Enter Grievance ID (e.g. MYL-2026-00482)...';inp.focus();
+}
+
+function trackById(id){
+  const cleanId=id.replace('#','');
+  const found=STATE.grievances.find(g=>g.id===cleanId);
+  if(found){
+    STATE.step='home';
+    showTyping();
+    setTimeout(()=>{
+      hideTyping();
+      const d=el('div');
+      const isResponded=found.status==='Responded';
+      d.innerHTML=`<div style="font-weight:700;font-size:14px;color:#1a3a6b;font-family:'Noto Serif',serif;margin-bottom:8px">🔍 Grievance Found</div>`;
+      d.appendChild(makeGrievanceCard(found,0));
+      showHomeMenu(d);
+      const row=el('div','msg-row');const av=el('div','avatar bot-av','MLA');
+      const bub=el('div','bubble bot-bub');
+      bub.appendChild(d);bub.appendChild(Object.assign(el('span','ts'),{textContent:now()}));
+      row.appendChild(av);row.appendChild(bub);area.appendChild(row);scroll();
+    },800);
+  } else {
+    STATE.step='home';
+    addBotMsg(`<div style="font-weight:600;color:#c62828;margin-bottom:6px">❌ Grievance Not Found</div>
+    <div style="font-size:12px;color:#5a6a82">No grievance found with ID <strong>${cleanId}</strong>. Please check the reference number and try again.</div>
+    <div class="choice-grid" style="margin-top:10px">
+      <button class="choice-btn" onclick="showTrackStatus()">🔍 Try Again</button>
+      <button class="choice-btn" onclick="startGrievance()">📋 Raise a Grievance</button>
+    </div>`);
+  }
+}
+
+// ===== INIT =====
+showWelcome();
+</script>
+</body>
+</html>
