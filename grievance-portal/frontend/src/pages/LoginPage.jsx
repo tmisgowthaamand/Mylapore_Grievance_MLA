@@ -14,6 +14,11 @@ export default function LoginPage() {
     if (!epic || epic.trim() === '') {
       return setError('Please enter your EPIC number')
     }
+
+    const epicRegex = /^[A-Z]{3}[0-9]{7}$/
+    if (!epicRegex.test(epic.trim().toUpperCase())) {
+      return setError('Invalid EPIC format. Use 3 letters and 7 numbers (e.g., TNA1234567)')
+    }
     
     setIsLoading(true)
     setError('')
@@ -67,10 +72,11 @@ export default function LoginPage() {
                 <input
                   type="text"
                   value={epic}
-                  onChange={(e) => setEpic(e.target.value.toUpperCase())}
+                  onChange={(e) => setEpic(e.target.value.toUpperCase().replace(/\s/g, '').slice(0, 10))}
                   className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-navy font-bold tracking-wide uppercase focus:ring-2 focus:ring-navy focus:border-navy transition-all"
                   placeholder="E.g., TNA1234567"
                   required
+                  maxLength={10}
                 />
               </div>
             </div>

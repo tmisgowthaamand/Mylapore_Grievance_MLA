@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { ShieldCheck, UserPlus, Search, ArrowRight, MapPin, FileText, Eye, Phone, Mail, Globe, ChevronRight, AlertCircle, CheckCircle2, Timer, Users } from 'lucide-react'
 import { useLang } from '../i18n'
 
@@ -27,6 +27,34 @@ export default function LandingPage() {
   const root = useReveal()
   const { t } = useLang()
 
+  const [stats, setStats] = useState({
+    totalReceived: '1,247',
+    totalResolved: '834',
+    avgResponseTime: '7 days',
+    satisfaction: '14,500+'
+  })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/public/stats')
+        if (!res.ok) return
+        const data = await res.json()
+        if (data.success) {
+          setStats({
+            totalReceived: data.stats.totalReceived.toLocaleString(),
+            totalResolved: data.stats.totalResolved.toLocaleString(),
+            avgResponseTime: data.stats.avgResponseTime,
+            satisfaction: data.stats.satisfaction
+          })
+        }
+      } catch {
+        // silently use default stats
+      }
+    }
+    fetchStats()
+  }, [])
+
   return (
     <div ref={root} className="bg-white" style={{ overflowX: 'clip' }}>
 
@@ -36,11 +64,11 @@ export default function LandingPage() {
           <span className="mx-10 opacity-80">📢 Portal now live — File grievances &amp; track status online</span>
           <span className="mx-10 opacity-80">🏛 MLA Office: Mon–Sat, 10 AM – 5 PM</span>
           <span className="mx-10 opacity-80">📞 Helpline: 1800-XXX-XXXX</span>
-          <span className="mx-10 opacity-80">✅ 834 grievances resolved this year</span>
+          <span className="mx-10 opacity-80">✅ {stats.totalResolved} grievances resolved this year</span>
           <span className="mx-10 opacity-80">📢 Portal now live — File grievances &amp; track status online</span>
           <span className="mx-10 opacity-80">🏛 MLA Office: Mon–Sat, 10 AM – 5 PM</span>
           <span className="mx-10 opacity-80">📞 Helpline: 1800-XXX-XXXX</span>
-          <span className="mx-10 opacity-80">✅ 834 grievances resolved this year</span>
+          <span className="mx-10 opacity-80">✅ {stats.totalResolved} grievances resolved this year</span>
         </div>
       </div>
 
@@ -81,9 +109,9 @@ export default function LandingPage() {
               {/* Mini stats */}
               <div className="hero-anim hero-anim-d4 flex gap-8 mt-10 pt-8 border-t border-gray-100">
                 {[
-                  { n: '1,247', l: t('received') },
-                  { n: '834', l: t('resolved') },
-                  { n: '7 days', l: t('avgResponse') },
+                  { n: stats.totalReceived, l: t('received') },
+                  { n: stats.totalResolved, l: t('resolved') },
+                  { n: stats.avgResponseTime, l: t('avgResponse') },
                 ].map((s, i) => (
                   <div key={i}>
                     <div className="text-xl font-extrabold text-navy leading-none">{s.n}</div>
@@ -104,7 +132,7 @@ export default function LandingPage() {
                   <CheckCircle2 className="w-5 h-5 text-tvk-green" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-navy">834 Resolved</div>
+                  <div className="text-sm font-bold text-navy">{stats.totalResolved} Resolved</div>
                   <div className="text-[10px] text-gray-400">This year</div>
                 </div>
               </div>
@@ -185,10 +213,10 @@ export default function LandingPage() {
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/[0.03] rounded-full translate-y-1/2 -translate-x-1/2" />
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { v: '1,247', l: t('totalReceived'), Icon: FileText, c: 'text-white' },
-                { v: '834', l: t('totalResolved'), Icon: CheckCircle2, c: 'text-green-400' },
-                { v: '312', l: t('responseTime'), Icon: Timer, c: 'text-orange-300' },
-                { v: '14,500+', l: t('satisfaction'), Icon: Users, c: 'text-blue-300' },
+                { v: stats.totalReceived, l: t('totalReceived'), Icon: FileText, c: 'text-white' },
+                { v: stats.totalResolved, l: t('totalResolved'), Icon: CheckCircle2, c: 'text-green-400' },
+                { v: stats.avgResponseTime, l: t('responseTime'), Icon: Timer, c: 'text-orange-300' },
+                { v: stats.satisfaction, l: t('satisfaction'), Icon: Users, c: 'text-blue-300' },
               ].map((s, i) => (
                 <div key={i} className="flex items-center gap-4">
                   <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">

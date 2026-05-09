@@ -3,8 +3,8 @@ import { LayoutDashboard, Inbox, CheckSquare, Settings, LogOut } from "lucide-re
 
 export default function Sidebar({ activeTab, onTabChange, onLogout }) {
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", filter: "All" },
-    { icon: Inbox, label: "Inbox", filter: "Open" },
+    { icon: LayoutDashboard, label: "Dashboard", filter: "Dashboard" },
+    { icon: Inbox, label: "Inbox", filter: "Inbox" },
     { icon: CheckSquare, label: "Resolved", filter: "Resolved" },
     { icon: Settings, label: "Settings", filter: "Settings" },
   ];

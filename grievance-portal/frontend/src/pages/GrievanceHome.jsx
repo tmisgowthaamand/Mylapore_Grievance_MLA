@@ -24,6 +24,11 @@ export default function GrievanceHome() {
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image too large. Please select a photo smaller than 10MB.')
+        e.target.value = ''
+        return
+      }
       setImage(file)
       setImagePreview(URL.createObjectURL(file))
     }
@@ -46,7 +51,7 @@ export default function GrievanceHome() {
     }
 
     setLoading(true)
-    const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+    const API = ''
     const formData = new FormData()
     formData.append('userId', user.phone || user.epic)
     formData.append('userName', user.name)
@@ -77,19 +82,8 @@ export default function GrievanceHome() {
       }])
       setStep(5)
     } catch (err) {
-      // Demo fallback
-      const gid = 'MYL-2026-' + String(Math.floor(Math.random() * 90000) + 10000)
-      setGrievanceId(gid)
-      setGrievances(prev => [...prev, {
-        id: gid,
-        category,
-        sub: subCategory,
-        location: location.text,
-        message: description,
-        submittedAt: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-        status: 'Open'
-      }])
-      setStep(5)
+      console.error('Submission error:', err)
+      alert(err.response?.data?.error || 'Failed to submit grievance. Please check your internet connection and try again.')
     }
     setLoading(false)
   }
@@ -124,15 +118,19 @@ export default function GrievanceHome() {
                 onClick={() => { setCategory(s.title); setStep(2) }}
                 className="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-navy hover:bg-navy/5 transition-all flex items-start gap-3 group bg-white shadow-sm hover:shadow-md"
               >
-                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                  {s.icon}
+                <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform flex-shrink-0 p-1 border border-gray-100">
+                  {s.img ? (
+                    <img src={s.img} alt={s.title} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-2xl">{s.icon}</span>
+                  )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-navy text-sm mb-0.5 flex items-center justify-between">
-                    {s.title}
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-navy group-hover:translate-x-1 transition-all" />
+                    <span className="truncate">{s.title}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-navy group-hover:translate-x-1 transition-all flex-shrink-0" />
                   </h3>
-                  <p className="text-xs text-gray-500 leading-tight">{s.description}</p>
+                  <p className="text-[11px] text-gray-500 leading-tight">{s.description}</p>
                 </div>
               </button>
             ))}
@@ -146,20 +144,27 @@ export default function GrievanceHome() {
           <h2 className="text-lg font-bold text-navy font-serif mb-2">🔍 Step 2: Select Issue Type</h2>
           <p className="text-sm text-gray-500 mb-4">Choose the specific issue under <strong>{category}</strong></p>
 
-          <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+          <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
             {SERVICES.find(s => s.title === category)?.options.map((opt, i) => (
               <button
                 key={opt.id}
                 onClick={() => { setSubCategory(opt.title); setStep(3) }}
-                className="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-navy hover:bg-navy/5 transition-all flex items-center gap-3 group bg-white shadow-sm"
+                className="w-full text-left p-4 border border-gray-200 rounded-2xl hover:border-navy hover:bg-navy/5 transition-all flex items-center gap-4 group bg-white shadow-sm hover:shadow-md"
               >
-                <div className="w-8 h-8 rounded-full bg-navy/5 text-navy flex items-center justify-center text-xs font-bold group-hover:bg-navy group-hover:text-white transition-colors">
-                  {i + 1}
+                <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform flex-shrink-0 p-1 border border-gray-100">
+                  {opt.img ? (
+                    <img src={opt.img} alt={opt.title} className="w-full h-full object-contain" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-navy/5 text-navy text-xs font-bold">
+                      {i + 1}
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <div className="font-bold text-sm text-navy">{opt.title}</div>
-                  <div className="text-xs text-gray-500">{opt.description}</div>
+                <div className="flex-1">
+                  <div className="font-bold text-sm text-navy mb-0.5">{opt.title}</div>
+                  <div className="text-[11px] text-gray-500">{opt.description}</div>
                 </div>
+                <ChevronRight className="w-4 h-4 text-gray-200 group-hover:text-navy group-hover:translate-x-1 transition-all" />
               </button>
             ))}
           </div>

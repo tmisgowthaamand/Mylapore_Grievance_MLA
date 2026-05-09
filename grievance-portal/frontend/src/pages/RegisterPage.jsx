@@ -28,6 +28,12 @@ export default function RegisterPage() {
     if (!formData.name.trim() || formData.phone.length < 10) {
       return setError('Name and 10-digit phone number required')
     }
+
+    const epicRegex = /^[A-Z]{3}[0-9]{7}$/
+    if (!epicRegex.test(formData.epic.trim())) {
+      return setError('Invalid EPIC format. Use 3 letters and 7 numbers (e.g., TNA1234567)')
+    }
+
     setIsLoading(true)
     setError('')
     try {
@@ -138,10 +144,11 @@ export default function RegisterPage() {
                   <input
                     type="text"
                     value={formData.epic}
-                    onChange={(e) => setFormData({ ...formData, epic: e.target.value.toUpperCase() })}
+                    onChange={(e) => setFormData({ ...formData, epic: e.target.value.toUpperCase().replace(/\s/g, '').slice(0, 10) })}
                     className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-navy font-semibold focus:ring-2 focus:ring-navy focus:border-navy transition-all uppercase tracking-wide"
                     placeholder="E.g. TNA1234567"
                     required
+                    maxLength={10}
                   />
                 </div>
               </div>

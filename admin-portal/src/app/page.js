@@ -3,14 +3,15 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/StatCard";
 import GrievanceCard from "@/components/GrievanceCard";
-import { LayoutDashboard, CheckSquare, AlertCircle, Clock, Lock, User as UserIcon } from "lucide-react";
+import { LayoutDashboard, CheckSquare, AlertCircle, Clock, Lock, User as UserIcon, MapPin } from "lucide-react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const [grievances, setGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState("Dashboard");
+  const [inboxFilter, setInboxFilter] = useState("All");
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
@@ -70,9 +71,17 @@ export default function Dashboard() {
   const respondedCount = grievances.filter(g => g.status === 'Responded').length;
   const totalCount = grievances.length;
 
-  const filteredGrievances = filter === "All" 
-    ? grievances 
-    : grievances.filter(g => g.status === filter);
+  const getFilteredGrievances = () => {
+    if (filter === "Inbox") {
+      return inboxFilter === "All" 
+        ? grievances.filter(g => g.status !== "Resolved") 
+        : grievances.filter(g => g.status === inboxFilter);
+    }
+    if (filter === "Resolved") return grievances.filter(g => g.status === "Resolved");
+    return grievances;
+  };
+
+  const filteredGrievances = getFilteredGrievances();
 
   if (!authChecked) return null;
 
@@ -173,58 +182,114 @@ export default function Dashboard() {
       <Sidebar activeTab={filter} onTabChange={setFilter} onLogout={handleLogout} />
 
       <main className="flex-1 ml-64 p-8 relative z-10 overflow-y-auto h-screen">
-        <header className="mb-8 flex justify-between items-end">
-          <div>
-            <h1 className="text-3xl font-black text-navy tracking-tight mb-1">Overview</h1>
-            <p className="text-gray-500 text-sm font-medium">Track, resolve, and manage constituency issues.</p>
-          </div>
-          <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs font-bold text-gray-600">System Online</span>
+        <header className="mb-8 flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-100 p-2 flex items-center justify-center">
+              <img src="/categories/social/Youtube.png" alt="TVK" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-black text-navy tracking-tight mb-1">
+                {filter === "Dashboard" ? "Constituency Overview" : "Inbox Intelligence"}
+              </h1>
+              <p className="text-gray-500 text-sm font-medium">
+                {filter === "Dashboard" ? "Real-time performance metrics and statistics." : "Manage and respond to constituency grievances."}
+              </p>
+            </div>
           </div>
         </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <StatCard title="Total Grievances" value={totalCount} icon={LayoutDashboard} colorClass="bg-blue-500" trend={12} />
-          <StatCard title="Open Issues" value={openCount} icon={AlertCircle} colorClass="bg-red-500" trend={-5} />
-          <StatCard title="Responded" value={respondedCount} icon={Clock} colorClass="bg-orange-500" />
-          <StatCard title="Resolved" value={resolvedCount} icon={CheckSquare} colorClass="bg-green-500" trend={18} />
-        </div>
+        {/* Dashboard View: Stats & Categories */}
+        {filter === "Dashboard" && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+              <StatCard title="Total Grievances" value={totalCount} icon={LayoutDashboard} colorClass="bg-blue-500" trend={12} />
+              <StatCard title="Open Issues" value={openCount} icon={AlertCircle} colorClass="bg-red-500" trend={-5} />
+              <StatCard title="Responded" value={respondedCount} icon={Clock} colorClass="bg-orange-500" />
+              <StatCard title="Resolved" value={resolvedCount} icon={CheckSquare} colorClass="bg-green-500" trend={18} />
+            </div>
 
-        {/* Filters & Content */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-navy">Recent Grievances</h2>
-            <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
-              {['All', 'Open', 'Responded', 'Resolved'].map(f => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    filter === f 
-                      ? 'bg-white text-navy shadow-sm border border-gray-200' 
-                      : 'text-gray-500 hover:text-navy'
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
+            {/* Constituency Analytics Section */}
+            <div className="bg-white rounded-[40px] p-10 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-1.5 h-6 bg-saffron rounded-full" />
+                <h3 className="text-xl font-black text-navy">Data Distribution Analytics</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                  <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Active Categories</p>
+                  {Object.entries(
+                    grievances.reduce((acc, g) => { acc[g.category] = (acc[g.category] || 0) + 1; return acc; }, {})
+                  ).sort((a,b) => b[1]-a[1]).slice(0, 4).map(([name, count], idx) => (
+                    <div key={name} className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-black text-navy uppercase">
+                        <span>{name}</span>
+                        <span>{count}</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
+                        <div className={`h-full ${["bg-saffron", "bg-blue-500", "bg-tvk-green", "bg-purple-500"][idx % 4]} rounded-full`} style={{ width: `${(count/totalCount)*100}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-navy rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+                  <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] mb-2">Total System Load</p>
+                  <h4 className="text-5xl font-black text-white tracking-tighter">{totalCount}</h4>
+                </div>
+              </div>
             </div>
           </div>
+        )}
 
-          {loading ? (
-            <div className="py-20 text-center text-gray-400 font-semibold animate-pulse">Loading grievances...</div>
-          ) : filteredGrievances.length === 0 ? (
-            <div className="py-20 text-center text-gray-400 font-semibold">No {filter.toLowerCase()} grievances found.</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredGrievances.map((g) => (
-                <GrievanceCard key={g.id} grievance={g} onStatusUpdate={handleStatusUpdate} />
-              ))}
+        {/* Inbox View: Grievance Details */}
+        {(filter === "Inbox" || filter === "Resolved") && (
+          <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-6 bg-saffron rounded-full" />
+                <h2 className="text-xl font-black text-navy tracking-tight">
+                  {filter === "Resolved" ? "Resolved Archives" : `${inboxFilter} Monitoring`}
+                </h2>
+              </div>
+              {filter === "Inbox" && (
+                <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+                  {['All', 'Open', 'Responded'].map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setInboxFilter(f)}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        inboxFilter === f 
+                          ? 'bg-white text-navy shadow-sm border border-gray-200' 
+                          : 'text-gray-500 hover:text-navy'
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+
+            {loading ? (
+              <div className="py-20 text-center text-gray-400 font-semibold animate-pulse font-mono tracking-tighter uppercase">Initializing Inbox Data...</div>
+            ) : filteredGrievances.length === 0 ? (
+              <div className="py-20 text-center text-gray-400 font-semibold">No {filter.toLowerCase()} grievances found in inbox.</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredGrievances.map((g) => (
+                  <GrievanceCard key={g.id} grievance={g} onStatusUpdate={handleStatusUpdate} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {filter === "Settings" && (
+          <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100 mt-8">
+            <Settings className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+            <h2 className="text-2xl font-black text-navy mb-2">Settings</h2>
+            <p className="text-gray-500">System configuration and admin preferences will appear here.</p>
+          </div>
+        )}
       </main>
     </div>
   );

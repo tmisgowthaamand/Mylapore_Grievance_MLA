@@ -16,12 +16,24 @@ const storage = multer.diskStorage({
     cb(null, `grievance-${Date.now()}${ext}`)
   }
 })
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB max
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }) // 10MB max
 
 const router = Router()
 
 // Create new grievance (with optional image)
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ success: false, error: 'Image too large. Max size is 10MB.' })
+      }
+      return res.status(400).json({ success: false, error: err.message })
+    } else if (err) {
+      return res.status(500).json({ success: false, error: err.message })
+    }
+    next()
+  })
+}, async (req, res) => {
   try {
     const { userId, userName, userPhone, category, subCategory, location, lat, lng, message } = req.body
     
@@ -84,7 +96,22 @@ router.get('/by-phone/:phone', async (req, res) => {
     if (phone.length < 10) {
       return res.status(400).json({ success: false, error: 'Invalid phone number' })
     }
-    const grievances = await db.getGrievancesByUser(phone)
+    // Check both userId and userPhone field
+    const grievances = await db.getGrievancesByPhone(phone)
+    res.json({ success: true, grievances })
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+// Search grievances by EPIC number
+router.get('/by-epic/:epic', async (req, res) => {
+  try {
+    const epic = (req.params.epic || '').trim().toUpperCase()
+    if (!epic) {
+      return res.status(400).json({ success: false, error: 'Invalid EPIC number' })
+    }
+    const grievances = await db.getGrievancesByUser(epic)
     res.json({ success: true, grievances })
   } catch (err) {
     res.status(500).json({ success: false, error: err.message })

@@ -223,9 +223,11 @@ export const db = {
 
   async getGrievancesByPhone(phone) {
     if (useDemo) {
-      return memDB.grievances.filter(g => g.userPhone === phone)
+      return memDB.grievances.filter(g => g.userPhone === phone || g.userId === phone)
     }
-    const docs = await GrievanceModel.find({ userPhone: phone }).sort({ createdAt: -1 })
+    const docs = await GrievanceModel.find({ 
+      $or: [{ userPhone: phone }, { userId: phone }] 
+    }).sort({ createdAt: -1 })
     return docs.map(d => d.toObject())
   },
 
@@ -254,5 +256,27 @@ export const db = {
     if (useDemo) return memDB.memberCount
     const count = await UserModel.countDocuments()
     return 1247 + count
+  },
+
+  async getStats() {
+    let total = 0
+    let resolved = 0
+    
+    if (useDemo) {
+      total = memDB.grievances.length + 1247
+      resolved = memDB.grievances.filter(g => g.status === 'Resolved').length + 834
+    } else {
+      const dbTotal = await GrievanceModel.countDocuments()
+      const dbResolved = await GrievanceModel.countDocuments({ status: 'Resolved' })
+      total = 1247 + dbTotal
+      resolved = 834 + dbResolved
+    }
+
+    return {
+      totalReceived: total,
+      totalResolved: resolved,
+      avgResponseTime: '7 days',
+      satisfaction: '14,500+'
+    }
   }
 }

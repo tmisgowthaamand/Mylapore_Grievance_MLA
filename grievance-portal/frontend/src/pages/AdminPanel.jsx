@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MapPin, MessageSquare, Send, CheckCircle2, Clock, Filter, Phone, RefreshCw, ImageIcon } from 'lucide-react'
 import axios from 'axios'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+const API = ''
 
 export default function AdminPanel() {
   const [grievances, setGrievances] = useState([])

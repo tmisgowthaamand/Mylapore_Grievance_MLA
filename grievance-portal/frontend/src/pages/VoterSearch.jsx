@@ -3,7 +3,7 @@ import { Search, Users, User, CreditCard, Home, ChevronLeft, ChevronRight } from
 import { useLang } from '../i18n'
 import axios from 'axios'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+const API = ''
 
 export default function VoterSearch() {
   const { t } = useLang()

@@ -8,8 +8,9 @@ export default function TrackStatus() {
   const [mode, setMode] = useState('id') // 'id' or 'phone'
   const [trackId, setTrackId] = useState('')
   const [trackPhone, setTrackPhone] = useState('')
+  const [trackEpic, setTrackEpic] = useState('')
   const [result, setResult] = useState(null) // single grievance
-  const [results, setResults] = useState([]) // multiple grievances (phone search)
+  const [results, setResults] = useState([]) // multiple grievances (phone/epic search)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -40,7 +41,7 @@ export default function TrackStatus() {
       } catch {
         setError(`No grievance found with ID "${cleanId}". Please check and try again.`)
       }
-    } else {
+    } else if (mode === 'phone') {
       const cleanPhone = trackPhone.replace(/[^0-9]/g, '')
       if (cleanPhone.length < 10) { setError('Enter a valid 10-digit mobile number'); setLoading(false); return }
       try {
@@ -52,6 +53,19 @@ export default function TrackStatus() {
         }
       } catch {
         setError(`No grievances found for this number. Please check and try again.`)
+      }
+    } else if (mode === 'epic') {
+      const cleanEpic = trackEpic.trim().toUpperCase()
+      if (!cleanEpic) { setError('Please enter your EPIC number'); setLoading(false); return }
+      try {
+        const res = await axios.get(`/api/grievances/by-epic/${cleanEpic}`)
+        if (res.data.grievances && res.data.grievances.length > 0) {
+          setResults(res.data.grievances)
+        } else {
+          setError(`No grievances found for EPIC ${cleanEpic}.`)
+        }
+      } catch {
+        setError(`No grievances found for this EPIC. Please check and try again.`)
       }
     }
     setLoading(false)
@@ -158,25 +172,34 @@ export default function TrackStatus() {
           <button
             type="button"
             onClick={() => switchMode('id')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-xs font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-bold transition-all uppercase tracking-tighter ${
               mode === 'id' ? 'bg-white text-navy shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            <Hash className="w-3.5 h-3.5" /> {t('referenceId')}
+             {t('referenceId')}
+          </button>
+          <button
+            type="button"
+            onClick={() => switchMode('epic')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-bold transition-all uppercase tracking-tighter ${
+              mode === 'epic' ? 'bg-white text-navy shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+             {t('epicNumber') || 'EPIC NO'}
           </button>
           <button
             type="button"
             onClick={() => switchMode('phone')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-xs font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-bold transition-all uppercase tracking-tighter ${
               mode === 'phone' ? 'bg-white text-navy shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            <Phone className="w-3.5 h-3.5" /> {t('mobileNumber')}
+             {t('mobileNumber')}
           </button>
         </div>
 
         <form onSubmit={handleTrack}>
-          {mode === 'id' ? (
+          {mode === 'id' && (
             <div className="mb-4">
               <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">{t('grievanceRefId')}</label>
               <input
@@ -188,7 +211,24 @@ export default function TrackStatus() {
                 autoFocus
               />
             </div>
-          ) : (
+          )}
+
+          {mode === 'epic' && (
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">EPIC Number</label>
+              <input
+                type="text"
+                className="input-field text-center font-mono uppercase tracking-wider"
+                placeholder="TNA1234567"
+                value={trackEpic}
+                onChange={(e) => setTrackEpic(e.target.value.toUpperCase().slice(0, 10))}
+                maxLength={10}
+                autoFocus
+              />
+            </div>
+          )}
+
+          {mode === 'phone' && (
             <div className="mb-4">
               <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">{t('mobileNumber')}</label>
               <div className="flex">
@@ -208,7 +248,7 @@ export default function TrackStatus() {
           )}
 
           {error && (
-            <div className="flex items-center gap-2 text-red-600 text-xs mb-4 bg-red-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-red-600 text-xs mb-4 bg-red-50 p-3 rounded-lg border border-red-100">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               {error}
             </div>
@@ -216,32 +256,27 @@ export default function TrackStatus() {
 
           <button
             type="submit"
-            className="btn-primary w-full"
-            disabled={loading || (mode === 'id' ? !trackId.trim() : trackPhone.replace(/[^0-9]/g, '').length < 10)}
+            className="btn-primary w-full py-3.5"
+            disabled={loading || (mode === 'id' ? !trackId.trim() : mode === 'epic' ? !trackEpic.trim() : trackPhone.replace(/[^0-9]/g, '').length < 10)}
           >
             {loading ? t('searching') : t('trackStatusBtn')}
           </button>
         </form>
 
-        {/* Single Result (ID search) */}
-        {result && (
-          <div className="mt-6">
-            <GrievanceCard g={result} />
+        {/* Results */}
+        {(result || results.length > 0) && (
+          <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            {result && <GrievanceCard g={result} />}
+            {results.map((g) => (
+              <GrievanceCard key={g.id} g={g} />
+            ))}
           </div>
         )}
 
-        {/* Multiple Results (Phone search) */}
-        {results.length > 0 && (
-          <div className="mt-6">
-            <p className="text-xs font-semibold text-gray-500 mb-3">
-              {t('found')} <span className="text-navy">{results.length}</span> {results.length > 1 ? t('grievances') : t('grievance')} {t('forNumber')} +91 {trackPhone}
-            </p>
-            <div className="space-y-4">
-              {results.map((g) => (
-                <GrievanceCard key={g.id} g={g} />
-              ))}
-            </div>
-          </div>
+        {(mode === 'phone' || mode === 'epic') && results.length > 0 && (
+          <p className="mt-4 text-center text-[10px] text-gray-400">
+             Found {results.length} records matching your {mode === 'phone' ? 'phone' : 'EPIC'} number
+          </p>
         )}
       </div>
     </div>
